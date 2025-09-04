@@ -1,5 +1,5 @@
-import TrainingCalendar from "@/components/TrainingCalendarSeptember";
+import HealthyCalendar from "@/components/HealthyCalendarSeptember";
 
 export default function Index() {
-  return <TrainingCalendar />;
+  return <HealthyCalendar />;
 }

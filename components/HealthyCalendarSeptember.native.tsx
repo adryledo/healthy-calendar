@@ -2,7 +2,7 @@ import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import type { FC } from 'react';
 import React, { useMemo, useState } from 'react';
 import { Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
-import { CalendarEvent, EventType, MealEvent, events as sharedEvents, SportEvent, SportType } from './TrainingCalendarData';
+import { CalendarEvent, EventType, MealEvent, events as sharedEvents, SportEvent, SportType } from './HealthyCalendarData';
 
 const activityColorHex: Record<string, string> = {
   bike: '#60A5FA', // blue-400
@@ -53,7 +53,7 @@ const IconForType: FC<{ type: EventType, subType?: SportType }> = ({ type, subTy
 };
 
 
-export default function TrainingCalendarNative() {
+export default function HealthyCalendarNative() {
   const [selectedDate, setSelectedDate] = useState('2025-09-02');
 
   const dayEvents: CalendarEvent[] = useMemo(() => (sharedEvents as Record<string, CalendarEvent[]>)[selectedDate] || [], [selectedDate]);

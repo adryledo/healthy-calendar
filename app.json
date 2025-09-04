@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "training-calendar",
-    "slug": "training-calendar",
+    "name": "healthy-calendar",
+    "slug": "healthy-calendar",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "trainingcalendar",
+    "scheme": "healthycalendar",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {

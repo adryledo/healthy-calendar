@@ -6,7 +6,7 @@ import { LuUtensilsCrossed } from 'react-icons/lu';
 import { MdRowing } from 'react-icons/md';
 
 // import shared types and events from central data file
-import { CalendarEvent, events, EventType, MealEvent, SportEvent, SportType } from './TrainingCalendarData';
+import { CalendarEvent, events, EventType, MealEvent, SportEvent, SportType } from './HealthyCalendarData';
 
 const activityColors: Record<string, string> = {
   bike: "text-blue-400",
@@ -43,7 +43,7 @@ const IconForTypeWeb = ({ type, subType }: { type: EventType, subType?: SportTyp
   }
 };
 
-export default function TrainingCalendar() {
+export default function HealthyCalendar() {
   const [selectedDate, setSelectedDate] = useState("2025-09-02"); // Updated initial state
 
   const dayEvents = useMemo(() => events[selectedDate] || [], [selectedDate]);
