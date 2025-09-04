@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global base styles */
+* { box-sizing: border-box; }
+html, body, #root, #__next { height: 100%; }
+/* Use direct CSS rather than @apply to avoid editor lint errors when PostCSS isn't run */
+body { background-color: #000000; color: #ffffff; }
+
+/* NativeWind: Enable react-native-web preflight if needed (kept for reference) */
+/* @import "tailwindcss-react-native/dist/preflight"; */
