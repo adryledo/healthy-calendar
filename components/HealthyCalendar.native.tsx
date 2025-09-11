@@ -4,14 +4,15 @@ import React, { useMemo, useState } from 'react';
 import { Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
 import { CalendarEvent, EventType, MealEvent, events as sharedEvents, SportEvent, SportType } from './HealthyCalendarData';
 
-const activityColorHex: Record<string, string> = {
-  bike: '#60A5FA', // blue-400
-  strength: '#34D399', // green-400
-  run: '#F87171', // red-400
-  swim: '#FBBF24', // yellow-400
-  meal: '#A78BFA', // purple-400
-  functional: '#FB923C', // orange-400
-  rowing: '#2DD4BF', // teal-400
+const activityColorHex: Partial<Record<EventType|SportType, string>> = {
+  [SportType.Bike]: '#60A5FA', // blue-400
+  [SportType.Strength]: '#34D399', // green-400
+  [SportType.Run]: '#F87171', // red-400
+  [SportType.Swim]: '#FBBF24', // yellow-400
+  [SportType.Functional]: '#FB923C', // orange-400
+  [SportType.Rowing]: '#2DD4BF', // teal-400
+  
+  [EventType.Meal]: '#A78BFA', // purple-400
 };
 
 const hrZoneColors: Record<string, string> = {
@@ -23,7 +24,9 @@ const hrZoneColors: Record<string, string> = {
 };
 
 const IconForType: FC<{ type: EventType, subType?: SportType }> = ({ type, subType }) => {
-  const color = activityColorHex[type] || '#9CA3AF';
+  const color = (type === EventType.Sport && subType)
+    ? activityColorHex[subType]
+    : activityColorHex[type] || '#9CA3AF';
 
   switch (true) {
     case type === EventType.Meal:
@@ -53,7 +56,7 @@ const IconForType: FC<{ type: EventType, subType?: SportType }> = ({ type, subTy
 };
 
 
-export default function HealthyCalendarNative() {
+function HealthyCalendarNative() {
   const [selectedDate, setSelectedDate] = useState('2025-09-02');
 
   const dayEvents: CalendarEvent[] = useMemo(() => (sharedEvents as Record<string, CalendarEvent[]>)[selectedDate] || [], [selectedDate]);
@@ -181,3 +184,5 @@ export default function HealthyCalendarNative() {
     </SafeAreaView>
   );
 }
+
+export default HealthyCalendarNative;
