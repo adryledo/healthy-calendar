@@ -11,6 +11,7 @@ export const weeklySelectorStyles = StyleSheet.create({
     alignItems: 'center',
   },
   weekDayCell: {
+    width: 64,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 12,

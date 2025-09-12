@@ -1,13 +1,19 @@
-import React, { useMemo, useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { healthyCalendarScreenStyles as styles } from '@/styles/screens/healthyCalendarScreen';
-import { events as sharedEvents, CalendarEvent } from '@/components/HealthyCalendarData';
+import { EventList } from '@/components/EventList';
+import { CalendarEvent, events as sharedEvents } from '@/components/HealthyCalendarData';
 import { MonthlyGrid } from '@/components/MonthlyGrid';
 import { WeeklySelector } from '@/components/WeeklySelector';
-import { EventList } from '@/components/EventList';
+import { healthyCalendarScreenStyles as styles } from '@/styles/screens/healthyCalendarScreen';
+import React, { useMemo, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 function HealthyCalendarScreen() {
-  const [selectedDate, setSelectedDate] = useState('2025-09-02');
+  const getTodayDateString = () => {
+    const today = new Date();
+    const todayUTC = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
+    return todayUTC.toISOString().split('T')[0];
+  };
+
+  const [selectedDate, setSelectedDate] = useState(getTodayDateString());
 
   const dayEvents: CalendarEvent[] = useMemo(() => (sharedEvents as Record<string, CalendarEvent[]>)[selectedDate] || [], [selectedDate]);
 
@@ -46,6 +52,32 @@ function HealthyCalendarScreen() {
     setSelectedDate(d.toISOString().split('T')[0]);
   };
 
+  const dateWindow = useMemo(() => {
+    const dates = [];
+    // Start 2 months before the selected month
+    const startDate = new Date(selectedMonthDate);
+    startDate.setUTCMonth(startDate.getUTCMonth() - 2);
+    startDate.setUTCDate(1);
+
+    // End 2 months after the selected month
+    const endDate = new Date(selectedMonthDate);
+    endDate.setUTCMonth(endDate.getUTCMonth() + 3);
+    endDate.setUTCDate(0);
+
+    let currentDate = new Date(startDate);
+    while (currentDate <= endDate) {
+      dates.push(new Date(currentDate));
+      currentDate.setUTCDate(currentDate.getUTCDate() + 1);
+    }
+    return dates;
+  }, [selectedMonthDate]);
+
+  const handleWeekScroll = (date: string) => {
+    if (date.substring(0, 7) !== selectedDate.substring(0, 7)) {
+      setSelectedDate(date);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <MonthlyGrid 
@@ -61,7 +93,8 @@ function HealthyCalendarScreen() {
       <WeeklySelector 
         selectedDate={selectedDate}
         onDateSelect={setSelectedDate}
-        weekDates={weekDates}
+        dates={dateWindow}
+        onScroll={handleWeekScroll}
       />
       <EventList events={dayEvents} />
     </SafeAreaView>
