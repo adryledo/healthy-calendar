@@ -1,5 +1,5 @@
-import HealthyCalendar from "@/components/HealthyCalendarSeptember";
+import HealthyCalendarNative from "@/components/HealthyCalendar.native";
 
 export default function Index() {
-  return <HealthyCalendar />;
+  return <HealthyCalendarNative />;
 }

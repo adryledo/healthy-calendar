@@ -1,26 +1,28 @@
+import { colors } from '@/styles/colors';
+import { styles } from '@/styles/components/healthyCalendar';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import type { FC } from 'react';
 import React, { useMemo, useState } from 'react';
-import { Pressable, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { CalendarEvent, EventType, MealEvent, events as sharedEvents, SportEvent, SportType } from './HealthyCalendarData';
 
-const activityColorHex: Partial<Record<EventType|SportType, string>> = {
-  [SportType.Bike]: '#60A5FA', // blue-400
-  [SportType.Strength]: '#34D399', // green-400
-  [SportType.Run]: '#F87171', // red-400
-  [SportType.Swim]: '#FBBF24', // yellow-400
-  [SportType.Functional]: '#FB923C', // orange-400
-  [SportType.Rowing]: '#2DD4BF', // teal-400
-  
-  [EventType.Meal]: '#A78BFA', // purple-400
+const activityColorHex: Partial<Record<EventType | SportType, string>> = {
+  [SportType.Bike]: colors.blue400,
+  [SportType.Strength]: colors.green400,
+  [SportType.Run]: colors.red400,
+  [SportType.Swim]: colors.yellow400,
+  [SportType.Functional]: colors.orange400,
+  [SportType.Rowing]: colors.teal400,
+  [EventType.Meal]: colors.purple400,
 };
 
 const hrZoneColors: Record<string, string> = {
-  Z1: "text-gray-400",
-  Z2: "text-blue-300",
-  Z3: "text-yellow-300",
-  Z4: "text-orange-400",
-  Z5: "text-red-500",
+  Z1: colors.gray400,
+  Z2: colors.blue300,
+  Z3: colors.yellow300,
+  Z4: colors.orange400,
+  Z5: colors.red500,
 };
 
 const IconForType: FC<{ type: EventType, subType?: SportType }> = ({ type, subType }) => {
@@ -62,40 +64,59 @@ function HealthyCalendarNative() {
   const dayEvents: CalendarEvent[] = useMemo(() => (sharedEvents as Record<string, CalendarEvent[]>)[selectedDate] || [], [selectedDate]);
 
   const weekDates = useMemo(() => {
-    const date = new Date(selectedDate + 'T00:00:00');
+    const date = new Date(selectedDate + 'T00:00:00Z');
     return [...Array(7)].map((_, i) => {
       const d = new Date(date);
-      d.setDate(date.getDate() - 3 + i);
+      d.setUTCDate(d.getUTCDate() - 3 + i);
       return d;
     });
   }, [selectedDate]);
 
+  const selectedMonthDate = useMemo(() => new Date(selectedDate + 'T00:00:00Z'), [selectedDate]);
+
+  const prevMonthDate = useMemo(() => {
+    const d = new Date(selectedMonthDate);
+    d.setUTCMonth(d.getUTCMonth() - 1);
+    return d;
+  }, [selectedMonthDate]);
+
+  const nextMonthDate = useMemo(() => {
+    const d = new Date(selectedMonthDate);
+    d.setUTCMonth(d.getUTCMonth() + 1);
+    return d;
+  }, [selectedMonthDate]);
+
   return (
-    <SafeAreaView className="flex-1 bg-black p-4">
+    <SafeAreaView style={styles.container}>
       {/* Header */}
-      <View className="flex-row justify-between items-center mb-4">
+      <View style={styles.headerContainer}>
         <Pressable onPress={() => {
-          // go to previous month (simple decrement by 1 day)
-          const d = new Date(selectedDate + 'T00:00:00');
-          d.setMonth(d.getMonth() - 1);
+          const d = new Date(selectedDate + 'T00:00:00Z');
+          d.setUTCMonth(d.getUTCMonth() - 1);
           const next = d.toISOString().split('T')[0];
           setSelectedDate(next);
         }}>
-          <Text className="text-gray-400">August</Text>
+          <Text style={styles.headerText}>
+            {prevMonthDate.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' })}
+          </Text>
         </Pressable>
-        <Text className="text-white text-lg font-bold">September</Text>
+        <Text style={styles.headerTitle}>
+          {selectedMonthDate.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' })}
+        </Text>
         <Pressable onPress={() => {
-          const d = new Date(selectedDate + 'T00:00:00');
-          d.setMonth(d.getMonth() + 1);
+          const d = new Date(selectedDate + 'T00:00:00Z');
+          d.setUTCMonth(d.getUTCMonth() + 1);
           const next = d.toISOString().split('T')[0];
           setSelectedDate(next);
         }}>
-          <Text className="text-gray-400">October</Text>
+          <Text style={styles.headerText}>
+            {nextMonthDate.toLocaleString('en-US', { month: 'long', timeZone: 'UTC' })}
+          </Text>
         </Pressable>
       </View>
 
       {/* Monthly Grid */}
-      <View className="flex-row flex-wrap -m-1 mb-4">
+      <View style={styles.monthlyGridContainer}>
         {[...Array(30)].map((_, i) => {
           const day = i + 1;
           const dateStr = `2025-09-${day.toString().padStart(2, '0')}`;
@@ -105,14 +126,14 @@ function HealthyCalendarNative() {
             <Pressable
               key={day}
               onPress={() => setSelectedDate(dateStr)}
-              className={`p-2 m-1 w-[12%] rounded-lg items-center justify-center ${isSelected ? 'border border-blue-500' : 'border-transparent'} bg-zinc-900`}
+              style={[styles.dayCell, isSelected && styles.dayCellSelected]}
             >
-              <Text className={`text-sm ${isSelected ? 'text-white' : 'text-gray-400'}`}>{day}</Text>
-              <View className="flex-row flex-wrap mt-1 justify-center">
+              <Text style={[styles.dayText, isSelected && styles.dayTextSelected]}>{day}</Text>
+              <View style={styles.eventIconsContainer}>
                 {monthDayEvents.map((ev, idx) => {
                   if (ev.type === 'meal') return null; // keep same behavior as web
                   return (
-                    <View key={idx} className="mr-1">
+                    <View key={idx} style={styles.eventIcon}>
                       <IconForType
                         type={ev.type as EventType}
                         {...(ev.type === EventType.Sport && { subType: (ev as SportEvent).sportType })}
@@ -127,21 +148,21 @@ function HealthyCalendarNative() {
       </View>
 
       {/* Weekly Selector */}
-      <ScrollView horizontal contentContainerStyle={{ paddingVertical: 8 }} showsHorizontalScrollIndicator={false} className="mb-4">
-        <View className="flex-row items-center">
+      <ScrollView horizontal contentContainerStyle={{ paddingVertical: 8 }} showsHorizontalScrollIndicator={false} style={styles.weeklySelectorScrollView}>
+        <View style={styles.weeklySelectorContainer}>
           {weekDates.map((date) => {
-            const day = date.getDate();
-            const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+            const day = date.getUTCDate();
+            const dayName = date.toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' });
             const dateStr = date.toISOString().split('T')[0];
             const isSel = selectedDate === dateStr;
             return (
               <Pressable
                 key={dateStr}
                 onPress={() => setSelectedDate(dateStr)}
-                className={`px-4 py-2 rounded-xl mr-3 ${isSel ? 'border border-blue-500 bg-zinc-900' : 'bg-zinc-800'}`}
+                style={[styles.weekDayCell, isSel && styles.weekDayCellSelected]}
               >
-                <Text className="text-xs text-gray-300">{dayName}</Text>
-                <Text className="text-white">{day}</Text>
+                <Text style={styles.weekDayName}>{dayName}</Text>
+                <Text style={styles.weekDayText}>{day}</Text>
               </Pressable>
             );
           })}
@@ -149,33 +170,31 @@ function HealthyCalendarNative() {
       </ScrollView>
 
       {/* Events list */}
-      <ScrollView className="flex-1">
+      <ScrollView style={styles.eventsScrollView}>
         {dayEvents.map((ev, idx) => (
-          <View key={idx} className="bg-zinc-900 rounded-2xl p-4 mb-4 flex-row items-start">
-            <View className="mr-4 mt-1">
+          <View key={idx} style={styles.eventItemContainer}>
+            <View style={styles.eventItemIcon}>
               <IconForType
                 type={ev.type as EventType}
                 {...(ev.type === EventType.Sport && { subType: (ev as SportEvent).sportType })}
               />
             </View>
-            <View style={{ flex: 1 }}>
-              <Text className="text-sm text-gray-400">{ev.time}</Text>
-              <Text className="text-lg text-white font-semibold mt-1">{ev.title}</Text>
-              <Text className="text-sm text-gray-500">{ev.location}</Text>
-              {ev.type === EventType.Sport && (ev as SportEvent).distanceInKm && (
-                <Text className="text-xs text-gray-400 mt-1">Dist: {(ev as SportEvent).distanceInKm}</Text>
+            <View style={styles.eventItemDetails}>
+              <Text style={styles.eventItemTime}>{ev.time}</Text>
+              <Text style={styles.eventItemTitle}>{ev.title}</Text>
+              <Text style={styles.eventItemLocation}>{ev.location}</Text>
+              {ev.type === EventType.Sport && (ev as SportEvent).distanceInKm != null && (ev as SportEvent).distanceInKm > 0 && (
+                <Text style={styles.eventItemExtraInfo}>Dist: {(ev as SportEvent).distanceInKm}</Text>
               )}
               {ev.type === EventType.Sport && (ev as SportEvent).hrZone && (
-                <Text className="text-xs mt-1">HR: <Text className={`${hrZoneColors[(ev as SportEvent).hrZone!] || "text-gray-400"}`}>{(ev as SportEvent).hrZone}</Text></Text>
+                <Text style={styles.hrZoneText}>HR: <Text style={{ color: hrZoneColors[(ev as SportEvent).hrZone!] || colors.gray400 }}>{(ev as SportEvent).hrZone}</Text></Text>
               )}
-              {ev.expectedDurationInMinutes && <Text className="text-xs text-gray-400 mt-1">Expected: {ev.expectedDurationInMinutes}</Text>}
-
+              {ev.expectedDurationInMinutes != null && ev.expectedDurationInMinutes > 0 && <Text style={styles.eventItemExtraInfo}>Expected: {ev.expectedDurationInMinutes}</Text>}
               {ev.type === EventType.Meal && (ev as MealEvent).ingredients && (ev as MealEvent).ingredients!.length > 0 && (
-                <Text className="text-xs text-gray-400 mt-1">Ingredients: {(ev as MealEvent).ingredients!.join(', ')}</Text>
+                <Text style={styles.eventItemExtraInfo}>Ingredients: {(ev as MealEvent).ingredients!.join(', ')}</Text>
               )}
-
               {ev.type === EventType.Meal && (ev as MealEvent).preparation && (ev as MealEvent).preparation!.length > 0 && (
-                <Text className="text-xs text-gray-400 mt-1">Preparation: {(ev as MealEvent).preparation!.join(' ')}</Text>
+                <Text style={styles.eventItemExtraInfo}>Preparation: {(ev as MealEvent).preparation!.join(' ')}</Text>
               )}
             </View>
           </View>
