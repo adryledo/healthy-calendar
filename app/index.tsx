@@ -1,5 +1,5 @@
-import HealthyCalendarNative from "@/components/HealthyCalendar.native";
+import HealthyCalendarScreen from "./(tabs)";
 
 export default function Index() {
-  return <HealthyCalendarNative />;
+  return <HealthyCalendarScreen />;
 }
