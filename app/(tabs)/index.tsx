@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { styles } from '@/styles/components/healthyCalendar';
+import { healthyCalendarScreenStyles as styles } from '@/styles/screens/healthyCalendarScreen';
 import { events as sharedEvents, CalendarEvent } from '@/components/HealthyCalendarData';
 import { MonthlyGrid } from '@/components/MonthlyGrid';
 import { WeeklySelector } from '@/components/WeeklySelector';

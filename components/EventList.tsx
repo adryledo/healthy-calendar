@@ -1,5 +1,5 @@
 import { colors } from '@/styles/colors';
-import { styles } from '@/styles/components/healthyCalendar';
+import { eventListStyles as styles } from '@/styles/components/eventList';
 import React from 'react';
 import { ScrollView, Text, View } from 'react-native';
 import { CalendarEvent, EventType, MealEvent, SportEvent } from './HealthyCalendarData';

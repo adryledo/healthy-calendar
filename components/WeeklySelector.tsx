@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView, Text, View, Pressable } from 'react-native';
-import { styles } from '@/styles/components/healthyCalendar';
+import { weeklySelectorStyles as styles } from '@/styles/components/weeklySelector';
 
 interface WeeklySelectorProps {
   selectedDate: string;
